@@ -1,6 +1,9 @@
 /// <reference path="node_modules/vectorx/vector.ts" />
 /// <reference path="node_modules/utilsx/utils.ts" />
 
+function cload(register,value){
+    return [OpT.load,register,value]
+}
 
 function noop(){}
 
@@ -44,8 +47,7 @@ function and(){
 function cmp(){
     var res = registers[0] - registers[1]
     flags[flag.zero] = res == 0
-    flags[flag.carry] = false
-    flags[flag.overflow] = false
+    flags[flag.negative] = res < 0
 }
 
 function jmp(){
@@ -108,15 +110,17 @@ ops[OpT.call] = new Op(OpT.call,call,2)
 ops[OpT.ret] = new Op(OpT.ret,ret,1)
 var registers = [0,0]
 var stack = []
-var flags = [false,false,false,false]
-enum flag{zero,overflow,carry,negative}
+var flags = [false,false]
+enum flag{zero,negative}
 var params = [0,0,0]
 var memory:OpT[] | number[] = [
-
+    ...cload(0,8),
+    ...cload(1,9),
+    OpT.cmp
 ]
 
 
-for(var i = 0; i < 1000 && ic <= memory.length; i++){
+for(var i = 0; i < 1000 && ic < memory.length; i++){
     var opi = memory[ic]
     var op = ops[opi]
     op.cb()
