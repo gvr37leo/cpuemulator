@@ -150,6 +150,31 @@ function cincr10(adr){
     ]
 }
 
+function csetadr6(adr,value){
+    return [
+        ...cload3(0,value),
+        ...cstore3(0,adr)
+    ]
+}
+
+function caddval10(adr,val){
+    return [
+        ...cdref3(0,adr),
+        ...cload3(1,val),
+        ...cadd1(),
+        ...cstore3(1,adr)
+    ]
+}
+
+function caddadr10(adra,adrb){
+    return [
+        ...cdref3(0,adra),
+        ...cdref3(1,adrb),
+        ...cadd1(),
+        ...cstore3(1,adrb)
+    ]
+}
+
 class Op{
     constructor(public type:OpT,public cb:() => void,public size:number){
 
@@ -199,9 +224,22 @@ var memory:OpT[] | number[] = [
     2,
     10,
     1,1,0,0,0,0,0,0,0,0,
+    0,
+    0,
     ...ccmpadrs7(0,1),//7//*12
     ...cbranch3(5,flag.negative),//3
     ...cjmp2(999),//2
+
+    ...csetadr6(3,2),
+    ...caddadr10(0,3),
+    ...caddval10(3,-1),
+
+    ...csetadr6(4,2),
+    ...caddadr10(0,4),
+    ...caddval10(4,-2),
+
+    // ...cseta
+
     ...cdref3(0,2 + i - 1),//3
     ...cdref3(1,2 + i - 2),//3
     ...cadd1(),

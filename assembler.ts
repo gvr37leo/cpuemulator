@@ -4,7 +4,7 @@ function assemble(text:string):number[]{
     var labels = new Map<string,number>()
 
     var memcounter = 0
-    for(var row of rows){
+    for(var row of rows.filter(v => v !== '')){
         var splittedrow = row.split(' ')
         var left = splittedrow[0]
         var middle = splittedrow[1]
