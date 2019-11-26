@@ -19,8 +19,9 @@ function assemble(text:string):number[]{
                 i++
             }
 
-            if(/[a-z]/.test(splittedrow[i])){
-                result.push(splittedrow)
+            if(/[a-z]+;/.test(splittedrow[i])){
+                var command = splittedrow[i].substr(0,splittedrow[i].length - 1)
+                result.push(command)
                 i++
             }
 
