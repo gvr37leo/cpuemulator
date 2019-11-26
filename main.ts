@@ -1,5 +1,6 @@
 /// <reference path="node_modules/vectorx/vector.ts" />
 /// <reference path="node_modules/utilsx/utils.ts" />
+/// <reference path="assembler.ts" />
 
 function cnoop(){
     return [OpT.noop]
@@ -255,6 +256,13 @@ for(var i = 0; i < 1000 && ic < memory.length; i++){
     op.cb()
     ic += op.size
 }
+
+fetch('./test.as')
+.then(res => res.text())
+.then(text => {
+    assemble(text)
+});
+
 
 fib()
 
