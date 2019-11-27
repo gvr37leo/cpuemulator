@@ -127,13 +127,6 @@ function cret(){
     return [OpT.ret]
 }
 
-function ccmpadrs7(a,b){
-    return [
-        ...cdref3(0,a),
-        ...cdref3(1,b),
-        ...ccmp1()
-    ]
-}
 
 
 
@@ -192,8 +185,8 @@ ops[OpT.ret] = new Op(OpT.ret,ret,1)
 var registers = [0,0]
 var ic = 0//instruction counter
 var stack = []
-var flags = [false,false]
-enum flag{zero,negative}
+var flags = [false,false,false]
+enum flag{zero,negative,carry}
 var params = [0,0,0]
 var memory:OpT[] | number[] = [
 ]
