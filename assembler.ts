@@ -42,7 +42,6 @@ opsmap.set('branch',new Op2(cbranch3 as any,3,2))
 opsmap.set('jmp',new Op2(cjmp2 as any,2,1))
 
 function assemble(text:string):number[]{
-    var result:number[] = []
     var rows = text.split('\n')
     var labels = new Map<string,number>()
     var inCommentMode = false
@@ -56,16 +55,21 @@ function assemble(text:string):number[]{
         }
 
         if(row.isOp){
-            var op = opsmap.get(row.opcode)
-            memcounter += op.size
+            memcounter += row.op.size
         }else{
-            
+
         }
         memcounter += row.data.length
     }
 
+    var result:number[] = []
     for(var row of parsedrows){//build the memory and replace the labels with addresses
+        if(row.isOp){
 
+            result.push()
+        }else{
+
+        }
     }
     return result
 }
@@ -98,6 +102,7 @@ function parserow(row:string){
         label,
         isOp,
         opcode,
+        op:opsmap.get(opcode),
         data,
     }
 }
