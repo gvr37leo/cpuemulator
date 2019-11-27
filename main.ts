@@ -101,20 +101,13 @@ function jmp(){
     ic = memory[ic + 1] - ops[OpT.jmp].size
 }
 
-function cjmp2(to){
-    return [OpT.jmp,to]
-}
+
 
 function branch(){
     if(flags[memory[ic + 2]]){
         jmp()
     }
 }
-
-function cbranch3(to,flag){
-    return [OpT.jmp,to,flag]
-}
-
 
 function call(){
     stack.push(ic)
@@ -142,30 +135,10 @@ function ccmpadrs7(a,b){
     ]
 }
 
-function cincr10(adr){
-    return [
-        ...cdref3(1,adr),
-        ...cload3(0,1),
-        ...cadd1(),
-        ...cstore3(1,adr)
-    ]
-}
 
-function csetadr6(adr,value){
-    return [
-        ...cload3(0,value),
-        ...cstore3(0,adr)
-    ]
-}
 
-function caddval10(adr,val){
-    return [
-        ...cdref3(0,adr),
-        ...cload3(1,val),
-        ...cadd1(),
-        ...cstore3(1,adr)
-    ]
-}
+
+
 
 function caddadr10(adra,adrb){
     return [
@@ -199,7 +172,7 @@ enum OpT{noop,load,store,dref,dreg,add,sub,mul,div,or,and,cmp,jmp,jz,call,ret}
 // call address/label/direct
 
 
-var ic = 0
+
 var ops:Op[] = []
 ops[OpT.noop] = new Op(OpT.noop,noop,1)
 ops[OpT.load] = new Op(OpT.load,load,3)
@@ -217,44 +190,22 @@ ops[OpT.jmp] = new Op(OpT.jmp,jmp,2)
 ops[OpT.call] = new Op(OpT.call,call,2)
 ops[OpT.ret] = new Op(OpT.ret,ret,1)
 var registers = [0,0]
+var ic = 0//instruction counter
 var stack = []
 var flags = [false,false]
 enum flag{zero,negative}
 var params = [0,0,0]
 var memory:OpT[] | number[] = [
-    2,
-    10,
-    1,1,0,0,0,0,0,0,0,0,
-    0,
-    0,
-    ...ccmpadrs7(0,1),//7//*12
-    ...cbranch3(5,flag.negative),//3
-    ...cjmp2(999),//2
-
-    ...csetadr6(3,2),
-    ...caddadr10(0,3),
-    ...caddval10(3,-1),
-
-    ...csetadr6(4,2),
-    ...caddadr10(0,4),
-    ...caddval10(4,-2),
-
-    // ...cseta
-
-    ...cdref3(0,2 + i - 1),//3
-    ...cdref3(1,2 + i - 2),//3
-    ...cadd1(),
-    ...cstore3(1,2 + i),
-    ...cincr10(0),
-    ...cjmp2(12)
 ]
 
-
-for(var i = 0; i < 1000 && ic < memory.length; i++){
-    var opi = memory[ic]
-    var op = ops[opi]
-    op.cb()
-    ic += op.size
+function exec(){
+    ic = 0
+    for(var i = 0; i < 1000 && ic < memory.length; i++){
+        var opi = memory[ic]
+        var op = ops[opi]
+        op.cb()
+        ic += op.size
+    }
 }
 
 fetch('./test.as')

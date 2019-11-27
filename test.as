@@ -5,20 +5,20 @@
 @left 0
 @right 0
 @temp 0
-cmp; i,10
+cmp; *i,10
 branch; loop
 jmp; end
 
-@loop move; &fibs,left
-    add; i,left
+@loop move; fibs,left
+    add; *i,left
     add; -1,left
 
-    move; &fibs,right
+    move; fibs,right
     add; *i,right
     add; -2,right
 
-    move; &fibs,temp
-    add; i,temp
+    move; fibs,temp
+    add; *i,temp
     add; left,*temp
     add; right,*temp
 
