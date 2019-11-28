@@ -101,10 +101,85 @@ function jmp(){
     ic = memory[ic + 1] - ops[OpT.jmp].size
 }
 
+function je(){
+    if(!flags[flag.negative] && flags[flag.zero]){
+        jmp()
+    }
+}
 
+function jz(){
+    je()
+}
+
+function jne(){
+    if(!flags[flag.negative] && !flags[flag.zero]){
+        jmp()
+    }
+}
+
+function jnz(){
+    jne()
+}
+
+function jg(){
+    if(!flags[flag.negative] && !flags[flag.zero]){
+        jmp()
+    }
+}
+
+function jnle(){
+    jg()
+}
+
+function jge(){
+    if(!flags[flag.negative] && flags[flag.zero]){
+        jmp()
+    }
+}
+
+function jnl(){
+    jge()
+}
+
+function jl(){
+    if(flags[flag.negative] && !flags[flag.zero]){
+        jmp()
+    }
+}
+
+function jnge(){
+    jl()
+}
+
+function jle(){
+    if(flags[flag.negative] && flags[flag.zero]){
+        jmp()
+    }
+}
+
+function jng(){
+    jle()
+}
+
+
+// JE/JZ	== =0
+// JNE/JNZ	!= =!0
+// JG/JNLE	>  !<=
+// JGE/JNL	>= !<
+// JL/JNGE	<  !>=
+// JLE/JNG	<= !>
+
+function cbranch5(to,negative,zero){
+    return [
+        OpT.branch,
+        to,
+        negative,
+        zero
+    ]
+}
 
 function branch(){
-    if(flags[memory[ic + 2]]){
+    if((memory[ic + 2] - (flags[flag.negative] as any)) && (memory[ic + 3] - (flags[flag.zero] as any))){
         jmp()
     }
 }
@@ -148,7 +223,7 @@ class Op{
     }
 }
 
-enum OpT{noop,load,store,dref,dreg,add,sub,mul,div,or,and,cmp,jmp,jz,call,ret}
+enum OpT{noop,load,store,dref,dreg,add,sub,mul,div,or,and,cmp,jmp,branch,call,ret}
 
 
 // noop
@@ -180,6 +255,7 @@ ops[OpT.or] = new Op(OpT.or,or,1)
 ops[OpT.and] = new Op(OpT.and,and,1)
 ops[OpT.cmp] = new Op(OpT.cmp,cmp,1)
 ops[OpT.jmp] = new Op(OpT.jmp,jmp,2)
+ops[OpT.branch] = new Op(OpT.branch,branch,2)
 ops[OpT.call] = new Op(OpT.call,call,2)
 ops[OpT.ret] = new Op(OpT.ret,ret,1)
 var registers = [0,0]

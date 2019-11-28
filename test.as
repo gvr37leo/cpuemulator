@@ -5,11 +5,11 @@
 @left 0
 @right 0
 @temp 0
-cmp; *i,10
-branch; loop
-jmp; end
+@loop cmp; *i,10
+    branch; loop,1
+    jmp; end
 
-@loop move; fibs,left
+    move; fibs,left
     add; *i,left
     add; -1,left
 
@@ -23,5 +23,6 @@ jmp; end
     add; right,*temp
 
     incr; i
+    jmp; loop
 
 @end noop;

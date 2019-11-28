@@ -18,8 +18,20 @@ function add10(adr,val){
     ]
 }
 
-function cbranch3(to,flag){
-    return [OpT.jmp,to,flag]
+
+
+// JE/JZ	== =0
+// JNE/JNZ	!= =!0
+// JG/JNLE	>  !<=
+// JGE/JNL	>= !<
+// JL/JNGE	<  !>=
+// JLE/JNG	<= !>
+
+
+
+
+function jz(to){
+
 }
 
 function cjmp2(to){
