@@ -192,7 +192,7 @@ function jng(){
 // JL/JNGE	<  !>=
 // JLE/JNG	<= !>
 
-function cbranch5(to,negative,zero){
+function cbranch4(to,negative,zero){
     return [
         OpT.branch,
         to,
@@ -306,7 +306,8 @@ function exec(){
 fetch('./test2.as')
 .then(res => res.text())
 .then(text => {
-    assemble(text)
+    memory = assemble(text)
+    exec()
 });
 
 
