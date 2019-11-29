@@ -27,13 +27,6 @@ function add10(adr,val){
 // JL/JNGE	<  !>=
 // JLE/JNG	<= !>
 
-
-
-
-function jz(to){
-
-}
-
 function cjmp2(to){
     return [OpT.jmp,to]
 }
@@ -48,20 +41,21 @@ function ccmpadr7(adra,adrb){
 
 
 class Op2{
-    constructor(public cb:() => number[], public size:number,public nparams:number){
+    constructor(public cb:() => number[], public size:number){
 
     }
 }
 
 var opsmap = new Map<string,Op2>()
 //move add incr cmp branch jmp
-opsmap.set('move',new Op2(move6 as any,6,2))
-opsmap.set('add',new Op2(add10 as any,10,2))
-opsmap.set('incr',new Op2(incr10 as any,10,1))
-opsmap.set('cmp',new Op2(ccmpadr7 as any,1,2))
-opsmap.set('branch',new Op2(cbranch3 as any,3,2))
-opsmap.set('jmp',new Op2(cjmp2 as any,2,1))
-opsmap.set('noop',new Op2(cnoop as any,1,0))
+opsmap.set('move',new Op2(move6 as any,6))
+opsmap.set('add',new Op2(add10 as any,10))
+opsmap.set('incr',new Op2(incr10 as any,10))
+opsmap.set('cmp',new Op2(ccmpadr7 as any,7))
+opsmap.set('branch',new Op2(cbranch5 as any,5))
+opsmap.set('jmp',new Op2(cjmp2 as any,2))
+opsmap.set('noop',new Op2(cnoop as any,1))
+opsmap.set('print',new Op2(cprint as any,1))
 
 function assemble(text:string):number[]{
     var rows = text.split(/\r?\n/)
@@ -78,8 +72,10 @@ function assemble(text:string):number[]{
 
         if(row.isOp){
             memcounter += row.op.size
+        }else{
+            var splitted = row.data.split(',') 
+            memcounter += splitted[0] == '' ? 0 : splitted.length
         }
-        memcounter += row.data.split(',').length//add params with data and with opcodes
     }
 
     var result:number[] = []
@@ -88,8 +84,9 @@ function assemble(text:string):number[]{
         
         if(row.isOp){
             var code = row.op.cb.call(null,...dataparams.map(dp => dp.value))//parse data
-            result.push(code)
-        }else{
+            result.push(...code)
+        }
+        else{
             result.push(...dataparams.map(dp => dp.value))
         }
     }

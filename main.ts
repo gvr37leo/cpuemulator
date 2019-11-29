@@ -18,9 +18,24 @@ function dreg(){
     registers[memory[ic + 1]] = memory[registers[ic + 1]]
 }
 
+function drega(){
+    registers[0] = memory[registers[0]]
+}
+
+function dregb(){
+    registers[1] = memory[registers[1]]
+}
+
 function cdref3(reg,address){
     return [OpT.dref,reg,address]
 }
+
+// function gendreg2xn(n){
+//     var res = []
+//     for(var i = 0; i < n; i++){
+        
+//     }
+// }
 
 function load(){
     registers[memory[ic + 1]] = memory[ic + 2]
@@ -127,6 +142,14 @@ function jg(){
     }
 }
 
+function print(){
+    console.log(registers[1])
+}
+
+function cprint(){
+    return [OpT.print]
+}
+
 function jnle(){
     jg()
 }
@@ -179,7 +202,7 @@ function cbranch5(to,negative,zero){
 }
 
 function branch(){
-    if((memory[ic + 2] - (flags[flag.negative] as any)) && (memory[ic + 3] - (flags[flag.zero] as any))){
+    if((memory[ic + 2] == <unknown>flags[flag.negative]) && memory[ic + 3] == <unknown>(flags[flag.zero])){
         jmp()
     }
 }
@@ -223,7 +246,7 @@ class Op{
     }
 }
 
-enum OpT{noop,load,store,dref,dreg,add,sub,mul,div,or,and,cmp,jmp,branch,call,ret}
+enum OpT{noop,load,store,dref,dreg,drega,dregb,add,sub,mul,div,or,and,cmp,jmp,branch,call,ret,print}
 
 
 // noop
@@ -247,6 +270,8 @@ ops[OpT.load] = new Op(OpT.load,load,3)
 ops[OpT.store] = new Op(OpT.store,store,3)
 ops[OpT.dref] = new Op(OpT.dref,dref,3)
 ops[OpT.dreg] = new Op(OpT.dreg,dreg,2)
+ops[OpT.drega] = new Op(OpT.drega,drega,1)
+ops[OpT.dregb] = new Op(OpT.dregb,dregb,1)
 ops[OpT.add] = new Op(OpT.add,add,1)
 ops[OpT.sub] = new Op(OpT.sub,sub,1)
 ops[OpT.mul] = new Op(OpT.mul,mul,1)
@@ -258,11 +283,12 @@ ops[OpT.jmp] = new Op(OpT.jmp,jmp,2)
 ops[OpT.branch] = new Op(OpT.branch,branch,2)
 ops[OpT.call] = new Op(OpT.call,call,2)
 ops[OpT.ret] = new Op(OpT.ret,ret,1)
+ops[OpT.print] = new Op(OpT.print,print,1)
 var registers = [0,0]
 var ic = 0//instruction counter
 var stack = []
 var flags = [false,false,false]
-enum flag{zero,negative,carry}
+enum flag{negative,zero,carry}
 var params = [0,0,0]
 var memory:OpT[] | number[] = [
 ]
@@ -277,7 +303,7 @@ function exec(){
     }
 }
 
-fetch('./test.as')
+fetch('./test2.as')
 .then(res => res.text())
 .then(text => {
     assemble(text)
