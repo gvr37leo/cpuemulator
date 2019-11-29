@@ -2,9 +2,7 @@
 /// <reference path="node_modules/utilsx/utils.ts" />
 /// <reference path="assembler.ts" />
 
-function cnoop(){
-    return [OpT.noop]
-}
+
 
 function noop(){
 
@@ -30,24 +28,16 @@ function cdref3(reg,address){
     return [OpT.dref,reg,address]
 }
 
-// function gendreg2xn(n){
-//     var res = []
-//     for(var i = 0; i < n; i++){
-        
-//     }
-// }
-
 function load(){
     registers[memory[ic + 1]] = memory[ic + 2]
 }
 
-function cload3(reg,value){
+function cload3(reg:number,value:number){
     return [OpT.load,reg,value]
 }
 
-
 function store(){
-    memory[ic + 2] = registers[memory[ic + 1]]
+    memory[memory[ic + 2]] = registers[memory[ic + 1]]
 }
 
 function cstore3(reg,adr){
@@ -146,9 +136,7 @@ function print(){
     console.log(registers[1])
 }
 
-function cprint(){
-    return [OpT.print]
-}
+
 
 function jnle(){
     jg()
@@ -192,14 +180,6 @@ function jng(){
 // JL/JNGE	<  !>=
 // JLE/JNG	<= !>
 
-function cbranch4(to,negative,zero){
-    return [
-        OpT.branch,
-        to,
-        negative,
-        zero
-    ]
-}
 
 function branch(){
     if((memory[ic + 2] == <unknown>flags[flag.negative]) && memory[ic + 3] == <unknown>(flags[flag.zero])){
@@ -240,13 +220,18 @@ function caddadr10(adra,adrb){
     ]
 }
 
-class Op{
-    constructor(public type:OpT,public cb:() => void,public size:number){
+function halt(){
+    ic = memory.length
+}
 
+class Op{
+    name:string
+    constructor(public type:OpT,public cb:() => void,public size:number){
+        this.name = cb.name
     }
 }
 
-enum OpT{noop,load,store,dref,dreg,drega,dregb,add,sub,mul,div,or,and,cmp,jmp,branch,call,ret,print}
+enum OpT{noop,load,store,dref,dreg,drega,dregb,add,sub,mul,div,or,and,cmp,jmp,branch,call,ret,print,halt}
 
 
 // noop
@@ -280,10 +265,11 @@ ops[OpT.or] = new Op(OpT.or,or,1)
 ops[OpT.and] = new Op(OpT.and,and,1)
 ops[OpT.cmp] = new Op(OpT.cmp,cmp,1)
 ops[OpT.jmp] = new Op(OpT.jmp,jmp,2)
-ops[OpT.branch] = new Op(OpT.branch,branch,2)
+ops[OpT.branch] = new Op(OpT.branch,branch,4)
 ops[OpT.call] = new Op(OpT.call,call,2)
 ops[OpT.ret] = new Op(OpT.ret,ret,1)
 ops[OpT.print] = new Op(OpT.print,print,1)
+ops[OpT.halt] = new Op(OpT.halt,halt,1)
 var registers = [0,0]
 var ic = 0//instruction counter
 var stack = []

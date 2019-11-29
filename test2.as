@@ -1,8 +1,6 @@
-jmp; start
-@a 1
-@b 2
-@start cmp; a,b
-branch; true,1,0
-jmp; false
-@true print;
-@false print;
+cmp; 420,69
+branch; true,0,0
+print; 0
+jmp; end
+@true print; 1
+@end halt;

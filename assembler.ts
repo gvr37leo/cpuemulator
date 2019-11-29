@@ -1,24 +1,49 @@
-function move6(adr,value){
+function gendrega1xn(n:number):number[]{
+    var res = []
+    for(var i = 0; i < n; i++){
+        res.push(OpT.drega)
+    }
+    return res
+}
+
+function gendregb1xn(n:number):number[]{
+    var res = []
+    for(var i = 0; i < n; i++){
+        res.push(OpT.dregb)
+    }
+    return res
+}
+
+function move6(adr:Param,value:Param){
     return [
-        ...cload3(0,value),
-        ...cstore3(0,adr)
+        ...cload3(0,value.value),
+        ...cstore3(0,adr.value)
     ]
 }
 
-function incr10(adr){
-    return add10(adr,1)
-}
-
-function add10(adr,val){
+function add10(adr:Param,val:Param):number[]{
     return [
-        ...cdref3(0,adr),
-        ...cload3(1,val),
+        ...cdref3(0,adr.value),
+        ...cload3(1,val.value),
+        ...gendrega1xn(val.drefCount),
         ...cadd1(),
-        ...cstore3(1,adr)
+        ...cstore3(1,adr.value)
     ]
 }
 
+function incr10(adr:Param){
+    return add10(adr,new Param(0,1))
+}
 
+function ccmp7(a:Param,b:Param):number[]{
+    return [
+        ...cload3(0,a.value),
+        ...gendrega1xn(a.drefCount),
+        ...cload3(1,b.value),
+        ...gendregb1xn(b.drefCount),
+        ...ccmp1()
+    ]
+}
 
 // JE/JZ	== =0
 // JNE/JNZ	!= =!0
@@ -27,18 +52,44 @@ function add10(adr,val){
 // JL/JNGE	<  !>=
 // JLE/JNG	<= !>
 
-function cjmp2(to){
-    return [OpT.jmp,to]
-}
-
-function ccmpadr7(adra,adrb){
+//00 >
+//01 ==
+//10 <
+//11 <=
+//01 >=
+function cbranch4(to:Param,negative:Param,zero:Param){
     return [
-        ...cdref3(0,adra),
-        ...cdref3(1,adrb),
-        ...ccmp1()
+        ...cload3(1,to.value),
+        ...gendregb1xn(to.drefCount),
+        OpT.branch,
+        negative.value,
+        zero.value,
     ]
 }
 
+function cjmp4(to:Param){
+    return [
+        ...cload3(1,to.value),
+        ...gendregb1xn(to.drefCount),
+        OpT.jmp,
+    ]
+}
+
+function cnoop(){
+    return [OpT.noop]
+}
+
+function cprint4(val:Param){
+    return [
+        ...cload3(1,val.value),
+        ...gendregb1xn(val.drefCount),
+        OpT.print
+    ]
+}
+
+function chalt1(){
+    return [OpT.halt]
+}
 
 class Op2{
     constructor(public cb:() => number[], public size:number){
@@ -47,15 +98,15 @@ class Op2{
 }
 
 var opsmap = new Map<string,Op2>()
-//move add incr cmp branch jmp
 opsmap.set('move',new Op2(move6 as any,6))
 opsmap.set('add',new Op2(add10 as any,10))
 opsmap.set('incr',new Op2(incr10 as any,10))
-opsmap.set('cmp',new Op2(ccmpadr7 as any,7))
+opsmap.set('cmp',new Op2(ccmp7 as any,7))
 opsmap.set('branch',new Op2(cbranch4 as any,4))
-opsmap.set('jmp',new Op2(cjmp2 as any,2))
+opsmap.set('jmp',new Op2(cjmp4 as any,2))
 opsmap.set('noop',new Op2(cnoop as any,1))
-opsmap.set('print',new Op2(cprint as any,1))
+opsmap.set('print',new Op2(cprint4 as any,4))
+opsmap.set('halt',new Op2(chalt1 as any,1))
 
 function assemble(text:string):number[]{
     var rows = text.split(/\r?\n/)
@@ -63,6 +114,7 @@ function assemble(text:string):number[]{
     var inCommentMode = false
     
     var parsedrows = rows.map(r => r.trim()).filter(v => v != '' && v[0] != '#').map(s => parserow(s))
+    var sourcemap = new Map<number,number>()
     
     var memcounter = 0
     for(var row of parsedrows){//calc all the label addresses
@@ -73,9 +125,10 @@ function assemble(text:string):number[]{
         if(row.isOp){
             memcounter += row.op.size
         }else{
-            var splitted = row.data.split(',') 
-            memcounter += splitted[0] == '' ? 0 : splitted.length
+            var splitted = row.data.split(',')
+            memcounter += splitted[0] == '' ? 0 : splitted.length;
         }
+        memcounter += (row.data.match(/\*/g) || []).length
     }
 
     var result:number[] = []
@@ -83,7 +136,7 @@ function assemble(text:string):number[]{
         var dataparams = parseParameters(row.data,labels)
         
         if(row.isOp){
-            var code = row.op.cb.call(null,...dataparams.map(dp => dp.value))//parse data
+            var code = row.op.cb.call(null,...dataparams)//parse data
             result.push(...code)
         }
         else{
@@ -149,6 +202,7 @@ function parserow(row:string){
     
     
     return {
+        row,
         haslabel,
         label,
         isOp,
@@ -156,17 +210,4 @@ function parserow(row:string){
         op:opsmap.get(opcode),
         data,
     }
-}
-
-function strcmp(a:string,b:string){
-    if(a.length != b.length){
-        return false
-    }
-
-    for(var i = 0; i < a.length;i++){
-        if(a[i] != b[i]){
-            return false
-        }
-    }
-    return true
 }
