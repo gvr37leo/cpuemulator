@@ -6,15 +6,41 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
     <style>
-        body{
-            margin: 0;
-        }
-        html, body {
-            overflow: hidden;
-        }
+
     </style>
 </head>
 <body>
+    <pre>
+mul regb = rega * regb
+div regb = rega / regb
+sub regb = rega - regb
+load reg,val load val into reg
+store reg,adr store register at adres
+and regb = rega & regb
+or regb = rega | regb
+dregb dreference value in register b
+set adr,value sets value at adres
+add adr,val adds val to adres
+incr adr adds 1 to adres
+cmp vala,valb compares 2 values and sets flags
+branch to,negativeflag,zeroflag go to address if flags are set
+jmp to go to addres
+noop do nothing
+print print value
+halt stop program
+    </pre>
+    <button id="compile">compile</button>
+    <button id="run">run</button>
+    <div style="display: flex; justify-content: space-around;">
+        <div>
+            <p>assembly</p>
+            <textarea style="resize: vertical;" id="assembly" cols="80" rows="50"></textarea>
+        </div>
+        <div>
+            <p>binary</p>
+            <textarea style="resize: vertical;" id="binary" cols="80" rows="50"></textarea>
+        </div>
+    </div>
     <script src="package.js"></script>
 </body>
 </html>

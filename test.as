@@ -1,23 +1,24 @@
 #.mcset; 1000
 #.labelset; gfx,3000
+jmp; loop
 @fibs 1,1,0,0,0,0,0,0,0,0
 @i 2
 @left 0
 @right 0
 @temp 0
-    @loop cmp; *i,10
-    branch; loop,1,0
+@loop cmp; *i,10
+    branch; loopcode,1,0
     jmp; end
 
-    move; fibs,left
+    @loopcode set; fibs,left
     add; *i,left
     add; -1,left
 
-    move; fibs,right
+    set; fibs,right
     add; *i,right
     add; -2,right
 
-    move; fibs,temp
+    set; fibs,temp
     add; *i,temp
     add; left,*temp
     add; right,*temp
@@ -25,4 +26,4 @@
     incr; i
     jmp; loop
 
-@end noop;
+@end print; 4
