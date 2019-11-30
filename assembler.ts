@@ -1,3 +1,10 @@
+class Param{
+    constructor(public drefCount:number, public value:number,){
+
+    }
+}
+enum OpT{noop,load,store,dref,dreg,drega,dregb,add,sub,mul,div,or,and,cmp,jmp,branch,call,ret,print,halt}
+
 function gendrega1xn(n:number):number[]{
     var res = []
     for(var i = 0; i < n; i++){
@@ -12,6 +19,10 @@ function gendregb1xn(n:number):number[]{
         res.push(OpT.dregb)
     }
     return res
+}
+
+function cdref3(reg,address){
+    return [OpT.dref,reg,address]
 }
 
 function move6(adr:Param,value:Param){
@@ -57,7 +68,7 @@ function ccmp7(a:Param,b:Param):number[]{
 //10 <
 //11 <=
 //01 >=
-function cbranch4(to:Param,negative:Param,zero:Param){
+function cbranch6(to:Param,negative:Param,zero:Param){
     return [
         ...cload3(1,to.value),
         ...gendregb1xn(to.drefCount),
@@ -96,17 +107,17 @@ class Op2{
 
     }
 }
-
+var fakeparam = new Param(0,0)
 var opsmap = new Map<string,Op2>()
-opsmap.set('move',new Op2(move6 as any,6))
-opsmap.set('add',new Op2(add10 as any,10))
-opsmap.set('incr',new Op2(incr10 as any,10))
-opsmap.set('cmp',new Op2(ccmp7 as any,7))
-opsmap.set('branch',new Op2(cbranch4 as any,4))
-opsmap.set('jmp',new Op2(cjmp4 as any,2))
-opsmap.set('noop',new Op2(cnoop as any,1))
-opsmap.set('print',new Op2(cprint4 as any,4))
-opsmap.set('halt',new Op2(chalt1 as any,1))
+opsmap.set('move',new Op2(move6 as any,move6(fakeparam,fakeparam).length))
+opsmap.set('add',new Op2(add10 as any,add10(fakeparam,fakeparam).length))
+opsmap.set('incr',new Op2(incr10 as any,incr10(fakeparam).length))
+opsmap.set('cmp',new Op2(ccmp7 as any,ccmp7(fakeparam,fakeparam).length))
+opsmap.set('branch',new Op2(cbranch6 as any,cbranch6(fakeparam,fakeparam,fakeparam).length))
+opsmap.set('jmp',new Op2(cjmp4 as any,cjmp4(fakeparam).length))
+opsmap.set('noop',new Op2(cnoop as any,cnoop().length))
+opsmap.set('print',new Op2(cprint4 as any,cprint4(fakeparam).length))
+opsmap.set('halt',new Op2(chalt1 as any,chalt1().length))
 
 function assemble(text:string):number[]{
     var rows = text.split(/\r?\n/)
@@ -146,11 +157,7 @@ function assemble(text:string):number[]{
     return result
 }
 
-class Param{
-    constructor(public drefCount:number, public value:number,){
 
-    }
-}
 
 function parseParameters(parameters:string,labels:Map<string,number>):Param[]{
     var result:Param[] = []

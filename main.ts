@@ -24,10 +24,6 @@ function dregb(){
     registers[1] = memory[registers[1]]
 }
 
-function cdref3(reg,address){
-    return [OpT.dref,reg,address]
-}
-
 function load(){
     registers[memory[ic + 1]] = memory[ic + 2]
 }
@@ -102,8 +98,14 @@ function ccmp1(){
     return [OpT.cmp]
 }
 
+function branch(){
+    if((memory[ic + 1] == <unknown>flags[flag.negative]) && memory[ic + 2] == <unknown>(flags[flag.zero])){
+        ic = registers[1] - ops[OpT.branch].size
+    }
+}
+
 function jmp(){
-    ic = memory[ic + 1] - ops[OpT.jmp].size
+    ic = registers[1] - ops[OpT.jmp].size
 }
 
 function je(){
@@ -181,11 +183,6 @@ function jng(){
 // JLE/JNG	<= !>
 
 
-function branch(){
-    if((memory[ic + 2] == <unknown>flags[flag.negative]) && memory[ic + 3] == <unknown>(flags[flag.zero])){
-        jmp()
-    }
-}
 
 function call(){
     stack.push(ic)
@@ -205,23 +202,8 @@ function cret(){
     return [OpT.ret]
 }
 
-
-
-
-
-
-
-function caddadr10(adra,adrb){
-    return [
-        ...cdref3(0,adra),
-        ...cdref3(1,adrb),
-        ...cadd1(),
-        ...cstore3(1,adrb)
-    ]
-}
-
 function halt(){
-    ic = memory.length
+    ic = memory.length - 1
 }
 
 class Op{
@@ -231,7 +213,6 @@ class Op{
     }
 }
 
-enum OpT{noop,load,store,dref,dreg,drega,dregb,add,sub,mul,div,or,and,cmp,jmp,branch,call,ret,print,halt}
 
 
 // noop
@@ -264,8 +245,8 @@ ops[OpT.div] = new Op(OpT.div,div,1)
 ops[OpT.or] = new Op(OpT.or,or,1)
 ops[OpT.and] = new Op(OpT.and,and,1)
 ops[OpT.cmp] = new Op(OpT.cmp,cmp,1)
-ops[OpT.jmp] = new Op(OpT.jmp,jmp,2)
-ops[OpT.branch] = new Op(OpT.branch,branch,4)
+ops[OpT.jmp] = new Op(OpT.jmp,jmp,1)
+ops[OpT.branch] = new Op(OpT.branch,branch,3)
 ops[OpT.call] = new Op(OpT.call,call,2)
 ops[OpT.ret] = new Op(OpT.ret,ret,1)
 ops[OpT.print] = new Op(OpT.print,print,1)
