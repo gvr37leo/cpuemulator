@@ -38,6 +38,13 @@ class CPUEmulator{
         this.ops[OpT.halt] = new Op(OpT.halt,this.halt,1)
     }
 
+    reset(){
+        this.registers = [0,0]
+        this.ic = 0
+        this.stack = []
+        this.flags = [false,false,false]
+    }
+
     exec(){
         cpu.ic = 0
         for(var i = 0; i < 1000 && this.ic < this.memory.length; i++){

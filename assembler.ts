@@ -179,7 +179,9 @@ opsmap.set('halt',new Op2(chalt1 as any,chalt1().length))//stop program
 class AssemblyRet{
     binary:number[] = []
     sourcemap = new Map<number,number>()
+    parsedRows:ParsedRow[]
     sourcemapString = new Map<number,string>()
+    datamap = new Set<number>()
 }
 function assemble(text:string):AssemblyRet{
     var result = new AssemblyRet()
@@ -188,7 +190,7 @@ function assemble(text:string):AssemblyRet{
     var inCommentMode = false
     
     var parsedrows = rows.map(r => r.trim()).filter(v => v != '' && v[0] != '#').map(s => parserow(s))
-    
+    result.parsedRows = parsedrows
     // maps from binarylinenumber to assembly linenumber
     var memcounter = 0
     for(var i = 0; i < parsedrows.length;i++){
@@ -202,7 +204,12 @@ function assemble(text:string):AssemblyRet{
             memcounter += row.op.size
         }else{
             var splitted = row.data.split(',')
-            memcounter += splitted[0] == '' ? 0 : splitted.length;
+            var datasize = splitted[0] == '' ? 0 : splitted.length;
+            for(var j = 0; j < datasize;j++){
+                result.datamap.add(memcounter + j)    
+            }
+            memcounter += datasize
+
         }
         memcounter += (row.data.match(/\*/g) || []).length
     }
@@ -247,39 +254,43 @@ function parseParameters(parameters:string,labels:Map<string,number>):Param[]{
     return result
 }
 
-function parserow(row:string){
-    var haslabel = false;
-    var label = '';
-    var isOp = false;
-    var opcode = '';
-    var data = ''
+class ParsedRow{
+    haslabel  = false
+    label  = ''
+    isOp  = false
+    opcode  = ''
+    data  = ''
+    op:Op2 = null
+    row:string
 
+    constructor(
+        
+    ){
+
+    }
+}
+
+function parserow(row:string){
+    var res = new ParsedRow()
+    res.row = row
     var splittedrow = row.split(' ')
     var  i = 0
     if(splittedrow[i][0] == '@'){
-        haslabel = true
-        label = splittedrow[0].substring(1)
+        res.haslabel = true
+        res.label = splittedrow[0].substring(1)
         i++
     }
 
     if(/^[a-z]+;$/.test(splittedrow[i])){
-        isOp = true
-        opcode = splittedrow[i].substr(0,splittedrow[i].length - 1)
+        res.isOp = true
+        res.opcode = splittedrow[i].substr(0,splittedrow[i].length - 1)
         i++
     }
 
     if(i == splittedrow.length - 1){
-        data = splittedrow[i]
+        res.data = splittedrow[i]
     }
     
-    
-    return {
-        row,
-        haslabel,
-        label,
-        isOp,
-        opcode,
-        op:opsmap.get(opcode),
-        data,
-    }
+    res.op = opsmap.get(res.opcode)
+    return res
 }
