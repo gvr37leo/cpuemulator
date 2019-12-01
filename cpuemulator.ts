@@ -32,21 +32,25 @@ class CPUEmulator{
         this.ops[OpT.cmp] = new Op(OpT.cmp,this.cmp,1)
         this.ops[OpT.jmp] = new Op(OpT.jmp,this.jmp,1)
         this.ops[OpT.branch] = new Op(OpT.branch,this.branch,3)
-        this.ops[OpT.call] = new Op(OpT.call,this.call,2)
+        this.ops[OpT.call] = new Op(OpT.call,this.call,1)
         this.ops[OpT.ret] = new Op(OpT.ret,this.ret,1)
         this.ops[OpT.print] = new Op(OpT.print,this.print,1)
         this.ops[OpT.halt] = new Op(OpT.halt,this.halt,1)
     }
 
     exec(){
-        this.ic = 0
         for(var i = 0; i < 1000 && this.ic < this.memory.length; i++){
-            var opi = this.memory[this.ic]
-            var op = this.ops[opi]
-            op.cb.call(this)
-            this.ic += op.size
+            this.step()
         }
     }
+
+    step(){
+        var opi = this.memory[this.ic]
+        var op = this.ops[opi]
+        op.cb.call(this)
+        this.ic += op.size
+    }
+
     noop(){
 
     }

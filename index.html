@@ -11,6 +11,7 @@
 </head>
 <body>
     <pre>
+assembly code instructions
 mul regb = rega * regb
 div regb = rega / regb
 sub regb = rega - regb
@@ -28,9 +29,56 @@ jmp to go to addres
 noop do nothing
 print print value
 halt stop program
+
+machine code instructions id,name,size,parameters
+0 noop 1
+1 dref 3 reg,adr
+2 dreg 2 reg dereferences value in specified register
+3 drega 1 dereferences value in registera
+4 dregb 1 dereferences value in registerb
+5 add 1 +
+6 sub 1 -
+7 mul 1 *
+8 div 1 /
+9 or 1 |
+10 and 1 &
+11 cmp 1 rega - regb and sets flags
+12 jmp 1 jumps to address in register b
+13 branch 3 negflag,zeroflag
+14 call 1
+15 ret 1
+16 load 3 register,val
+17 store 3 register,adr
+18 print 1 prints value in register b
+19 halt 1 jumps to end of memory
     </pre>
     <button id="compile">compile</button>
     <button id="run">run</button>
+    <button id="step">step</button>
+    <div >
+        <div style="display: inline;">flags</div>
+        negative
+        <input id="negativeflag" type="checkbox">
+        zero
+        <input id="zeroflag" type="checkbox">
+        carry
+        <input id="carryflag" type="checkbox">
+    </div>
+    <div>
+        <div style="display: inline;">registers</div>
+        <input style="width: 50px;" id="registera" type="number">
+        <input style="width: 50px;" id="registerb" type="number">  
+    </div>
+    <div>
+        <div style="display: inline;">instruction counter</div>    
+        <input style="width: 50px;" id="instructioncounter" type="number">
+        <button id="icsetbutton">set</button>
+    </div>
+    <div>
+        <div style="display: inline;">current instruction</div>    
+        <input style="width: 50px;" readonly id="currentinstruction" type="text">
+    </div>
+    
     <div style="display: flex; justify-content: space-around;">
         <div>
             <p>assembly</p>
@@ -38,7 +86,7 @@ halt stop program
         </div>
         <div>
             <p>binary</p>
-            <textarea style="resize: vertical;" id="binary" cols="80" rows="50"></textarea>
+            <textarea readonly style="resize: vertical;" id="binary" cols="80" rows="50"></textarea>
         </div>
     </div>
     <script src="package.js"></script>

@@ -3,7 +3,7 @@ class Param{
 
     }
 }
-enum OpT{noop,load,store,dref,dreg,drega,dregb,add,sub,mul,div,or,and,cmp,jmp,branch,call,ret,print,halt}
+enum OpT{noop,dref,dreg,drega,dregb,add,sub,mul,div,or,and,cmp,jmp,branch,call,ret,load,store,print,halt}
 
 function gendrega1xn(n:number):number[]{
     var res = []
@@ -176,21 +176,28 @@ opsmap.set('jmp',new Op2(cjmp4 as any,cjmp4(fakeparam).length))//to go to addres
 opsmap.set('noop',new Op2(cnoop as any,cnoop().length))//do nothing
 opsmap.set('print',new Op2(cprint4 as any,cprint4(fakeparam).length))//print value
 opsmap.set('halt',new Op2(chalt1 as any,chalt1().length))//stop program
-
-function assemble(text:string):number[]{
+class AssemblyRet{
+    binary:number[] = []
+    sourcemap = new Map<number,number>()
+    sourcemapString = new Map<number,string>()
+}
+function assemble(text:string):AssemblyRet{
+    var result = new AssemblyRet()
     var rows = text.split(/\r?\n/)
     var labels = new Map<string,number>()
     var inCommentMode = false
     
     var parsedrows = rows.map(r => r.trim()).filter(v => v != '' && v[0] != '#').map(s => parserow(s))
-    var sourcemap = new Map<number,number>()
     
+    // maps from binarylinenumber to assembly linenumber
     var memcounter = 0
-    for(var row of parsedrows){//calc all the label addresses
+    for(var i = 0; i < parsedrows.length;i++){
+        var row = parsedrows[i]
         if(row.haslabel){
             labels.set(row.label,memcounter)
         }
-
+        result.sourcemap.set(memcounter,i)
+        result.sourcemapString.set(memcounter,row.row)
         if(row.isOp){
             memcounter += row.op.size
         }else{
@@ -200,16 +207,16 @@ function assemble(text:string):number[]{
         memcounter += (row.data.match(/\*/g) || []).length
     }
 
-    var result:number[] = []
+    
     for(var row of parsedrows){//build the memory and replace the labels with addresses
         var dataparams = parseParameters(row.data,labels)
         
         if(row.isOp){
             var code = row.op.cb.call(null,...dataparams)//parse data
-            result.push(...code)
+            result.binary.push(...code)
         }
         else{
-            result.push(...dataparams.map(dp => dp.value))
+            result.binary.push(...dataparams.map(dp => dp.value))
         }
     }
     return result
