@@ -48,16 +48,18 @@
         zero
         <input id="carryflag" type="checkbox">
         carry
+        <button disabled id="flagsetbutton">set</button>
     </div>
     <div class="m5">
         <div style="display: inline;">registers</div>
         <input style="width: 50px;" id="registera" type="number">
-        <input style="width: 50px;" id="registerb" type="number">  
+        <input style="width: 50px;" id="registerb" type="number">
+        <button disabled id="registersetbutton">set</button> 
     </div>
     <div class="m5">
         <div style="display: inline;">instruction counter</div>    
         <input style="width: 50px;" id="instructioncounter" type="number">
-        <button id="icsetbutton">set</button>
+        <button disabled id="icsetbutton">set</button>
     </div>
     <div class="m5">
         <div style="display: inline;">current instruction</div>    
@@ -89,7 +91,7 @@
             <div>
                 <div style="margin: 16px 0 13px 0;">
                     <p style="display: inline;">binary</p>
-                    <button style="display: inline;">set memory</button>
+                    <button disabled id="setmembtn" style="display: inline;">set</button>
                 </div>
                 <textarea style="resize: none; white-space: pre;" id="binary" cols="80" rows="50"></textarea>
             </div>

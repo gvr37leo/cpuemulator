@@ -32,6 +32,7 @@ var currentinstruction:HTMLInputElement = query('#currentinstruction') as any
 var icsetbutton:HTMLInputElement = query('#icsetbutton') as any
 var assemblytablecontainer:HTMLElement = query('#assemblytablecontainer') as any
 var machinecodetablecontainer:HTMLElement = query('#machinecodetablecontainer') as any
+var setmembtn = query('#setmembtn')
 var assemblyret:AssemblyRet = null
 
 
@@ -39,7 +40,7 @@ var assemblyret:AssemblyRet = null
 assemblyArea.value = `print; 12`
 execcompile()
 syncscrollbars([linenumberArea,opnameArea,instructionpointerArea,binaryArea])
-
+updateinput()
 
 
 
@@ -51,6 +52,16 @@ compile.addEventListener('click',() => {
 run.addEventListener('click',() => {
     cpu.exec()
     updateinput()
+})
+
+step.addEventListener('click', () =>{
+    cpu.step()
+    updateinput()
+})
+
+setmembtn.addEventListener('click',() => {
+    cpu.memory = binaryArea.value.split('\n').map(v => parseInt(v))
+    updatememarea()
 })
 
 icsetbutton.addEventListener('click',() => {
@@ -74,8 +85,7 @@ function updateinput(){
     var textip = bin.map(() => '')
     textip[cpu.ic] = '=>'
     instructionpointerArea.value = textip.join('\n')
-    var textbin = bin.map((v,i) => v.toString())
-    binaryArea.value = textbin.join('\n')
+    updatememarea()
     var textsrcassembly = bin.map(() => '')
     assemblyret.sourcemap.forEach((v,k) => {
         textsrcassembly[k] = assemblyret.parsedRows[v].row
@@ -109,11 +119,12 @@ function updateinput(){
         currentinstruction.value = cpu.ops[cpu.memory[cpu.ic]].name
     }
 }
-updateinput()
-step.addEventListener('click', () =>{
-    cpu.step()
-    updateinput()
-})
+
+function updatememarea(){
+    var bin:number[] = cpu.memory
+    var textbin = bin.map((v,i) => v.toString())
+    binaryArea.value = textbin.join('\n')
+}
 
 
 fetch('./test.as')
