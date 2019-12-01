@@ -39,16 +39,19 @@ class CPUEmulator{
     }
 
     exec(){
+        cpu.ic = 0
         for(var i = 0; i < 1000 && this.ic < this.memory.length; i++){
             this.step()
         }
     }
 
     step(){
-        var opi = this.memory[this.ic]
-        var op = this.ops[opi]
-        op.cb.call(this)
-        this.ic += op.size
+        if(this.ic < this.memory.length){
+            var opi = this.memory[this.ic]
+            var op = this.ops[opi]
+            op.cb.call(this)
+            this.ic += op.size
+        }
     }
 
     noop(){
