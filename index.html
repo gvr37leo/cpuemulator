@@ -38,7 +38,7 @@
     <div class="m5">
             <button id="compile">compile</button>
             <button id="run">run</button>
-            <button id="step">step</button>
+            <button id="step">step(F10)</button>
     </div>
     <div class="m5">
         <div style="display: inline;">flags</div>
@@ -74,26 +74,26 @@
         <div style="display: flex;">
             <div>
                 <p>line#</p>
-                <textarea readonly class="nbr" style="resize: none; white-space: pre;" id="linenumber" cols="5" rows="50"></textarea>
+                <textarea readonly class="nbr" style="overflow-y: hidden; resize: none; white-space: pre;" id="linenumber" cols="5" rows="50"></textarea>
             </div>
             <div>
                 <p>src</p>
-                <textarea readonly class="nbr" style="resize: none; white-space: pre;" id="srcassembly" cols="13" rows="50"></textarea>
+                <textarea readonly class="nbr" style="overflow-y: hidden; resize: none; white-space: pre;" id="srcassembly" cols="53" rows="50"></textarea>
             </div>
             <div>
                 <p>op</p>
-                <textarea readonly class="nbr" style="resize: none; white-space: pre;" id="opname" cols="5" rows="50"></textarea>
+                <textarea readonly class="nbr" style="overflow-y: hidden; resize: none; white-space: pre;" id="opname" cols="5" rows="50"></textarea>
             </div>
             <div>
                 <p>ip</p>
-                <textarea readonly class="nbr" style="resize: none; white-space: pre;" id="instructionpointer" cols="1" rows="50"></textarea>
+                <textarea readonly class="nbr" style="overflow-y: hidden; resize: none; white-space: pre;" id="instructionpointer" cols="1" rows="50"></textarea>
             </div>
             <div>
                 <div style="margin: 16px 0 13px 0;">
                     <p style="display: inline;">binary</p>
                     <button disabled id="setmembtn" style="display: inline;">set</button>
                 </div>
-                <textarea style="resize: none; white-space: pre;" id="binary" cols="80" rows="50"></textarea>
+                <textarea style="resize: none; white-space: pre;" id="binary" cols="40" rows="50"></textarea>
             </div>
         </div>
     </div>

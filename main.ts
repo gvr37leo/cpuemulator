@@ -39,10 +39,17 @@ var assemblyret:AssemblyRet = null
 
 assemblyArea.value = `print; 12`
 execcompile()
-syncscrollbars([linenumberArea,opnameArea,instructionpointerArea,binaryArea])
+syncscrollbars([linenumberArea,opnameArea,instructionpointerArea,binaryArea,srcassemblyArea])
 updateinput()
 
+document.addEventListener('keydown',e => {
 
+    if(e.code == 'F10'){
+        e.preventDefault()
+        cpu.step()
+        updateinput()    
+    }
+})
 
 compile.addEventListener('click',() => {
     execcompile()
