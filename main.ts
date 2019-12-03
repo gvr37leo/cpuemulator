@@ -39,7 +39,7 @@ var assemblyret:AssemblyRet = null
 
 assemblyArea.value = `print; 12`
 execcompile()
-syncscrollbars([linenumberArea,opnameArea,instructionpointerArea,binaryArea,srcassemblyArea])
+syncscrollbars(binaryArea,[linenumberArea,opnameArea,instructionpointerArea,srcassemblyArea,])
 updateinput()
 
 document.addEventListener('keydown',e => {
@@ -199,17 +199,10 @@ function query(string:string){
     return document.querySelector(string)
 }
 
-function syncscrollbars(elements:HTMLElement[]){
-    for(var i = 0; i < elements.length;i++){
-        let el = elements[i]
-        el.addEventListener('scroll', () => {
-            syncscrollbar(el,elements.filter(v => v != el))
-        })
-    }
-}
-
-function syncscrollbar(src:HTMLElement,dstnations:HTMLElement[]){
-    for(var dst of dstnations){
-        dst.scrollTop = src.scrollTop
-    }
+function syncscrollbars(src:HTMLElement,dst:HTMLElement[]){
+    src.addEventListener('scroll', e => {
+        for(var d of dst){
+            d.scrollTop = src.scrollTop
+        }
+    })
 }
