@@ -7,7 +7,8 @@
 
 
 //debug fib
-//debug fib assembly
+//debug fib assembly (gaat iets fout met pointers in add)
+//disableable button
 
 var cpu =  new CPUEmulator()
 var assemblyArea:HTMLTextAreaElement = query('#assembly') as any
@@ -36,10 +37,7 @@ var assemblyret:AssemblyRet = null
 
 
 
-// assemblyArea.value = `print; 12`
-// execcompile()
 syncscrollbars(binaryArea,[linenumberArea,opnameArea,instructionpointerArea,srcassemblyArea,])
-// updateinput()
 
 document.addEventListener('keydown',e => {
 
