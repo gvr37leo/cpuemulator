@@ -6,9 +6,8 @@
 /// <reference path="projectutils.ts" />
 
 
-//update bin/memory after run/step
-//maybe somehow separate linenumber and comments from binary/memory
-//add linenumber opname instruction pointer
+//debug fib
+//debug fib assembly
 
 var cpu =  new CPUEmulator()
 var assemblyArea:HTMLTextAreaElement = query('#assembly') as any
@@ -37,10 +36,10 @@ var assemblyret:AssemblyRet = null
 
 
 
-assemblyArea.value = `print; 12`
-execcompile()
+// assemblyArea.value = `print; 12`
+// execcompile()
 syncscrollbars(binaryArea,[linenumberArea,opnameArea,instructionpointerArea,srcassemblyArea,])
-updateinput()
+// updateinput()
 
 document.addEventListener('keydown',e => {
 
@@ -137,8 +136,9 @@ function updatememarea(){
 fetch('./test.as')
 .then(res => res.text())
 .then(text => {
-    // cpu.memory = assemble(text)
-    // cpu.exec()
+    assemblyArea.value = text
+    execcompile()
+    updateinput()
 });
 
 fib()
