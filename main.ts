@@ -5,7 +5,6 @@
 /// <reference path="explanation.ts" />
 /// <reference path="projectutils.ts" />
 
-
 //debug fib
 //debug fib assembly (gaat iets fout met pointers in add)
 //disableable button
@@ -29,13 +28,20 @@ var registera:HTMLInputElement = query('#registera') as any
 var registerb:HTMLInputElement = query('#registerb') as any
 var instructioncounter:HTMLInputElement = query('#instructioncounter') as any
 var currentinstruction:HTMLInputElement = query('#currentinstruction') as any
-var icsetbutton:HTMLInputElement = query('#icsetbutton') as any
 var assemblytablecontainer:HTMLElement = query('#assemblytablecontainer') as any
 var machinecodetablecontainer:HTMLElement = query('#machinecodetablecontainer') as any
-var setmembtn = query('#setmembtn')
+
+var icsetbutton:HTMLInputElement = query('#icsetbutton') as any 
+var memsetbutton:HTMLInputElement = query('#setmembtn') as any
+var flagsetbutton:HTMLInputElement = query('#flagsetbutton') as any
+var registersetbutton:HTMLInputElement = query('#registersetbutton') as any 
+
 var assemblyret:AssemblyRet = null
 
-
+disableAbleButton(icsetbutton,[instructioncounter])
+disableAbleButton(flagsetbutton,[negativeflag,zeroflag,carryflag])
+disableAbleButton(registersetbutton,[registera,registerb])
+disableAbleButton(memsetbutton,[binaryArea])
 
 syncscrollbars(binaryArea,[linenumberArea,opnameArea,instructionpointerArea,srcassemblyArea,])
 
@@ -63,7 +69,7 @@ step.addEventListener('click', () =>{
     updateinput()
 })
 
-setmembtn.addEventListener('click',() => {
+memsetbutton.addEventListener('click',() => {
     cpu.memory = binaryArea.value.split('\n').map(v => parseInt(v))
     updatememarea()
 })
@@ -76,6 +82,21 @@ icsetbutton.addEventListener('click',() => {
     }
     updateinput()
 })
+
+flagsetbutton.addEventListener('click',() => {
+    cpu.flags[flag.carry] = carryflag.checked
+    cpu.flags[flag.negative] = negativeflag.checked
+    cpu.flags[flag.zero] = zeroflag.checked
+    updateinput()
+})
+
+registersetbutton.addEventListener('click',() => {
+    cpu.registers[0] = registera.valueAsNumber
+    cpu.registers[1] = registerb.valueAsNumber
+    updateinput()
+})
+
+
 function execcompile(){
     assemblyret = assemble(assemblyArea.value)
     cpu.memory = assemblyret.binary
@@ -202,5 +223,17 @@ function syncscrollbars(src:HTMLElement,dst:HTMLElement[]){
         for(var d of dst){
             d.scrollTop = src.scrollTop
         }
+    })
+}
+
+function disableAbleButton(button:HTMLButtonElement, inputs:HTMLElement[]){
+    button.addEventListener('click',() => {
+        button.disabled = true
+    })
+
+    inputs.forEach(v => {
+        v.addEventListener('input', () => {
+            button.disabled = false
+        })
     })
 }
