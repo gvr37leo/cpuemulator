@@ -21,7 +21,7 @@ function gendregb1xn(n:number):number[]{
     return res
 }
 
-function cdref3(reg,address){
+function cdref3(reg:number,address:number){
     return [OpT.dref,reg,address]
 }
 
