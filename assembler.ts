@@ -35,8 +35,9 @@ function move6(adr:Param,value:Param){
 function add10(adr:Param,val:Param):number[]{
     return [
         ...cdref3(0,adr.value),
+        ...gendrega1xn(adr.drefCount),
         ...cload3(1,val.value),
-        ...gendrega1xn(val.drefCount),
+        ...gendregb1xn(val.drefCount),
         ...cadd1(),
         ...cstore3(1,adr.value)
     ]
