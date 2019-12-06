@@ -10,18 +10,18 @@ jmp; loop
     branch; loopcode,1,0
     jmp; end
 
-    @loopcode set; fibs,left
-    add; *i,left
-    add; -1,left
+    @loopcode set; left,fibs
+    add; left,*i
+    add; left,-1
 
-    set; fibs,right
-    add; *i,right
-    add; -2,right
+    set; right,fibs
+    add; right,*i
+    add; right,-2
 
-    set; fibs,temp
-    add; *i,temp
-    add; left,*temp
-    add; right,*temp
+    set; temp,fibs
+    add; temp,*i
+    add; *temp,**left
+    add; *temp,**right
 
     incr; i
     jmp; loop

@@ -155,8 +155,9 @@ function updatememarea(){
 fetch('./test.as')
 .then(res => res.text())
 .then(text => {
-    assemblyArea.value = `add; *i,1; 
-    @i 0`
+    // assemblyArea.value = `add; *i,1; 
+    // @i 0`
+    assemblyArea.value = text
     execcompile()
     updateinput()
 });
