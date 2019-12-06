@@ -19,6 +19,7 @@ class CPUEmulator{
         this.ops[OpT.noop] = new Op(OpT.noop,this.noop,1)
         this.ops[OpT.load] = new Op(OpT.load,this.load,3)
         this.ops[OpT.store] = new Op(OpT.store,this.store,3)
+        this.ops[OpT.storereg] = new Op(OpT.storereg,this.storereg,1)
         this.ops[OpT.dref] = new Op(OpT.dref,this.dref,3)
         this.ops[OpT.dreg] = new Op(OpT.dreg,this.dreg,2)
         this.ops[OpT.drega] = new Op(OpT.drega,this.drega,1)
@@ -214,6 +215,10 @@ class CPUEmulator{
     
     halt(){
         this.ic = this.memory.length - 1
+    }
+
+    storereg(){//store what is in register 1 at adres in register 0
+        this.memory[this.registers[0]] = this.registers[1]
     }
     
 }

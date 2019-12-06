@@ -3,7 +3,7 @@ class Param{
 
     }
 }
-enum OpT{noop,dref,dreg,drega,dregb,add,sub,mul,div,or,and,cmp,jmp,branch,call,ret,load,store,print,halt}
+enum OpT{noop,dref,dreg,drega,dregb,add,sub,mul,div,or,and,cmp,jmp,branch,call,ret,load,store,storereg,print,halt}
 
 function gendrega1xn(n:number):number[]{
     var res = []
@@ -39,7 +39,7 @@ function add10(adr:Param,val:Param):number[]{
         ...cload3(1,val.value),
         ...gendregb1xn(val.drefCount),
         ...cadd1(),
-        ...cstore3(1,adr.value)
+        OpT.storereg,//store what is in register 1 at adres in register 0
     ]
 }
 
@@ -125,6 +125,10 @@ function cnoop(){
     return [OpT.noop]
 }
 function cstore3(reg:number,adr:number){
+    return [OpT.store,reg,adr]
+}
+
+function cstorereg3(reg:number,adr:number){
     return [OpT.store,reg,adr]
 }
 
