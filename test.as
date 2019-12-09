@@ -11,17 +11,17 @@ jmp; loop
     jmp; end
 
     @loopcode set; left,fibs
-    add; left,*i
-    add; left,-1
+    plusis; left,*i
+    plusis; left,-1
 
     set; right,fibs
-    add; right,*i
-    add; right,-2
+    plusis; right,*i
+    plusis; right,-2
 
     set; temp,fibs
-    add; temp,*i
-    add; *temp,**left
-    add; *temp,**right
+    plusis; temp,*i
+    plusis; *temp,**left
+    plusis; *temp,**right
 
     incr; i
     jmp; loop

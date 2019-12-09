@@ -2,6 +2,10 @@ class Param{
     constructor(public drefCount:number, public value:number,){
 
     }
+
+    c(){
+        return new Param(this.drefCount,this.value)
+    }
 }
 enum OpT{noop,dref,dreg,drega,dregb,add,sub,mul,div,or,and,cmp,jmp,branch,call,ret,load,store,storereg,print,halt}
 
@@ -32,23 +36,33 @@ function move6(adr:Param,value:Param){
     ]
 }
 
-function add10(adr:Param,val:Param):number[]{
+function add11(aval:Param,bval:Param,dst:Param):number[]{
     return [
-        ...cdref3(0,adr.value),
-        ...gendrega1xn(adr.drefCount),
-        ...cload3(1,val.value),
-        ...gendregb1xn(val.drefCount),
-        ...cadd1(),
+        ...cload3(0,aval.value),
+        ...gendrega1xn(aval.drefCount),
+        ...cload3(1,bval.value),
+        ...gendregb1xn(bval.drefCount),
+        ...cadd1(),//b is now answer
+        ...cload3(0,dst.value),
+        ...gendrega1xn(dst.drefCount),
         OpT.storereg,//store what is in register 1 at adres in register 0
     ]
 }
 
-function incr10(adr:Param){
-    return add10(adr,new Param(0,1))
+function plusis11(adr:Param,val:Param){
+    var vala = adr.c()
+    vala.drefCount++
+    return add11(vala,val,adr)
 }
+
+function incr11(adr:Param){
+    return plusis11(adr,new Param(0,1))
+}
+
 function cload3(reg:number,value:number){
     return [OpT.load,reg,value]
 }
+
 function ccmp7(vala:Param,valb:Param):number[]{
     return [
         ...cload3(0,vala.value),
@@ -88,12 +102,15 @@ function cjmp4(to:Param){
         OpT.jmp,
     ]
 }
+
 function cload3param(reg:Param,value:Param){
     return [OpT.load,reg.value,value.value]
 }
+
 function cadd1(){
     return [OpT.add]   
 }
+
 function csub(){
     return [OpT.sub]
 }
@@ -101,12 +118,15 @@ function csub(){
 function cmul(){
     return [OpT.mul]
 }
+
 function cdiv(){
     return [OpT.div]
 }
+
 function cor(){
     return [OpT.or]
 }
+
 function cand(){
     return [OpT.and]
 }
@@ -114,6 +134,7 @@ function cand(){
 function ccmp1(){
     return [OpT.cmp]
 }
+
 function ccall(to){
     return [OpT.call,to]
 }
@@ -121,9 +142,11 @@ function ccall(to){
 function cret(){
     return [OpT.ret]
 }
+
 function cnoop(){
     return [OpT.noop]
 }
+
 function cstore3(reg:number,adr:number){
     return [OpT.store,reg,adr]
 }
@@ -161,7 +184,7 @@ class Op2{
     }
 }
 
-//mult divide sub load store and or
+
 var fakeparam = new Param(0,0)
 var opsmap = new Map<string,Op2>()
 opsmap.set('mul',new Op2(cmul as any,cmul().length))//mul regb = rega * regb
@@ -173,8 +196,9 @@ opsmap.set('and',new Op2(cand as any,cand().length))//regb = rega & regb
 opsmap.set('or',new Op2(cor as any,cor().length))//regb = rega | regb
 opsmap.set('dregb',new Op2(cdregb as any,cdregb().length))//dreference value in register b
 opsmap.set('set',new Op2(move6 as any,move6(fakeparam,fakeparam).length))//adr,value sets value at adres
-opsmap.set('add',new Op2(add10 as any,add10(fakeparam,fakeparam).length))//adr,val adds val to adres
-opsmap.set('incr',new Op2(incr10 as any,incr10(fakeparam).length))//adr adds 1 to adres
+opsmap.set('add',new Op2(add11 as any,add11(fakeparam,fakeparam,fakeparam).length))//adr,val adds val to adres
+opsmap.set('plusis',new Op2(plusis11 as any,plusis11(fakeparam,fakeparam).length))//adr,val adds val to adres
+opsmap.set('incr',new Op2(incr11 as any,incr11(fakeparam).length))//adr adds 1 to adres
 opsmap.set('cmp',new Op2(ccmp7 as any,ccmp7(fakeparam,fakeparam).length))//vala,valb compares 2 values and sets flags
 opsmap.set('branch',new Op2(cbranch6 as any,cbranch6(fakeparam,fakeparam,fakeparam).length))//to,negative,zero go to address if flags are set
 opsmap.set('jmp',new Op2(cjmp4 as any,cjmp4(fakeparam).length))//to go to addres
