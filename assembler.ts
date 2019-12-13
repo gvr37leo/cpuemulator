@@ -36,7 +36,7 @@ function move6(adr:Param,value:Param){
     ]
 }
 
-function add11(aval:Param,bval:Param,dst:Param):number[]{
+function add12(aval:Param,bval:Param,dst:Param):number[]{
     return [
         ...cload3(0,aval.value),
         ...gendrega1xn(aval.drefCount),
@@ -49,14 +49,14 @@ function add11(aval:Param,bval:Param,dst:Param):number[]{
     ]
 }
 
-function plusis11(adr:Param,val:Param){
-    var vala = adr.c()
-    vala.drefCount++
-    return add11(vala,val,adr)
+function plusis12(adr:Param,val:Param){
+    var aval = adr.c()
+    aval.drefCount++
+    return add12(aval,val,adr)
 }
 
-function incr11(adr:Param){
-    return plusis11(adr,new Param(0,1))
+function incr12(adr:Param){
+    return plusis12(adr,new Param(0,1))
 }
 
 function cload3(reg:number,value:number){
@@ -196,9 +196,9 @@ opsmap.set('and',new Op2(cand as any,cand().length))//regb = rega & regb
 opsmap.set('or',new Op2(cor as any,cor().length))//regb = rega | regb
 opsmap.set('dregb',new Op2(cdregb as any,cdregb().length))//dreference value in register b
 opsmap.set('set',new Op2(move6 as any,move6(fakeparam,fakeparam).length))//adr,value sets value at adres
-opsmap.set('add',new Op2(add11 as any,add11(fakeparam,fakeparam,fakeparam).length))//adr,val adds val to adres
-opsmap.set('plusis',new Op2(plusis11 as any,plusis11(fakeparam,fakeparam).length))//adr,val adds val to adres
-opsmap.set('incr',new Op2(incr11 as any,incr11(fakeparam).length))//adr adds 1 to adres
+opsmap.set('add',new Op2(add12 as any,add12(fakeparam,fakeparam,fakeparam).length))//adr,val adds val to adres
+opsmap.set('plusis',new Op2(plusis12 as any,plusis12(fakeparam,fakeparam).length))//adr,val adds val to adres
+opsmap.set('incr',new Op2(incr12 as any,incr12(fakeparam).length))//adr adds 1 to adres
 opsmap.set('cmp',new Op2(ccmp7 as any,ccmp7(fakeparam,fakeparam).length))//vala,valb compares 2 values and sets flags
 opsmap.set('branch',new Op2(cbranch6 as any,cbranch6(fakeparam,fakeparam,fakeparam).length))//to,negative,zero go to address if flags are set
 opsmap.set('jmp',new Op2(cjmp4 as any,cjmp4(fakeparam).length))//to go to addres
@@ -240,7 +240,15 @@ function assemble(text:string):AssemblyRet{
             memcounter += datasize
 
         }
-        memcounter += (row.data.match(/\*/g) || []).length
+        var drefs = countdrefs(row.data)
+        if(['plusis'/* incr*/].findIndex(v => v == row.opcode) != -1){
+            memcounter += drefs[0] * 2// + 1 is already accounted for
+            memcounter += drefs[1]
+        }else{
+            memcounter += drefs.reduce((p,c) => p + c,0)
+        }
+        // debugger
+        
     }
 
     
@@ -281,6 +289,14 @@ function parseParameters(parameters:string,labels:Map<string,number>):Param[]{
         }
     }
     return result
+}
+
+function countdrefs(parameters:string):number[]{
+    var res = []
+    for(var param of parameters.split(',')){
+        res.push((param.match(/\*/g) || []).length)
+    }
+    return res
 }
 
 class ParsedRow{
