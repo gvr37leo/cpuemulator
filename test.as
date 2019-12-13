@@ -26,4 +26,4 @@ jmp; loop
     incr; i
     jmp; loop
 
-@end print; 4
+@end halt;
